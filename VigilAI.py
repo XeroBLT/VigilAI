@@ -1,72 +1,172 @@
 import time
 import streamlit as st
 import json
+from datetime import datetime
 
-# Load pre-generated scenarios
+# Load scenarios
 with open("scenarios.json") as f:
     data = json.load(f)
     scenarios = data["travelers"]
 
-# Demo UI
-st.title("DHS Border Security Training Simulator")
-
 # Initialize session state
-if 'user_input' not in st.session_state:
-    st.session_state.user_input = ''
+def init_session():
+    session_defaults = {
+        'user_input': '',
+        'conversation': [],
+        'score': 0,
+        'start_time': time.time(),
+        'protocols_followed': 0
+    }
+    for key, value in session_defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
-# Traveler selection
-scenario = st.selectbox("Select a traveler profile", [s["name"] for s in scenarios])
-selected = next(s for s in scenarios if s["name"] == scenario)
+# Risk indicator component
+def risk_indicator(flags):
+    risk_level = len(flags)
+    if risk_level == 0:
+        return "🟢 LOW RISK", "#4CAF50"
+    elif 1 <= risk_level <= 2:
+        return "🟡 MEDIUM RISK", "#FFC107"
+    else:
+        return "🔴 HIGH RISK", "#F44336"
 
-# Display traveler info
-st.subheader("Traveler Profile")
-col1, col2 = st.columns(2)
-with col1:
-    st.write(f"**Nationality**: {selected['nationality']}")
-    st.write(f"**Age**: {selected['age']}")
-with col2:
-    st.write(f"**Purpose**: {selected['purpose']}")
-    st.write(f"**Emotional State**: {selected['emotional_state'].title()}")
+# Main application
+def main():
+    st.set_page_config(page_title="DHS Training Simulator", layout="wide")
+    init_session()
+    
+    st.title("🚨 DHS Border Security Training Simulator")
+    
+    # --- Traveler Selection ---
+    selected_name = st.selectbox(
+        "Select Traveler Profile",
+        options=[t["name"] for t in scenarios],
+        index=0
+    )
+    selected = next(t for t in scenarios if t["name"] == selected_name)
+    
+    # Reset timer on new selection
+    if 'current_traveler' not in st.session_state or st.session_state.current_traveler != selected['id']:
+        st.session_state.start_time = time.time()
+        st.session_state.current_traveler = selected['id']
+    
+    # --- Profile Header ---
+    risk_text, risk_color = risk_indicator(selected["red_flags"])
+    with st.container():
+        col1, col2, col3 = st.columns([2,1,1])
+        with col1:
+            st.subheader(f"Traveler Profile: {selected['name']}")
+        with col2:
+            st.markdown(f"<h3 style='color:{risk_color};'>{risk_text}</h3>", unsafe_allow_html=True)
+        with col3:
+            elapsed = int(time.time() - st.session_state.start_time)
+            st.metric("⏱️ Time Elapsed", f"{elapsed // 60:02d}:{elapsed % 60:02d}")
+    
+    # --- Profile Details ---
+    with st.expander("📄 Traveler Details", expanded=True):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown(f"**Nationality**: {selected['nationality']}")
+            st.markdown(f"**Age**: {selected['age']}")
+        with col2:
+            st.markdown(f"**Purpose**: {selected['purpose']}")
+            st.markdown(f"**Emotional State**: {selected['emotional_state'].title()}")
+        with col3:
+            st.metric("🏆 Training Score", st.session_state.score)
+    
+    # --- Conversation Interface ---
+    with st.form("question_form"):
+        user_input = st.text_input("Ask a question:", key="question_input")
+        submitted = st.form_submit_button("➤ Submit Question")
+    
+    if submitted:
+        process_question(selected, user_input)
+    
+    # --- Conversation History ---
+    st.subheader("📜 Conversation Transcript")
+    for entry in st.session_state.conversation[-5:]:  # Show last 5 exchanges
+        st.markdown(f"`{entry['time']}` **{entry['role']}**: {entry['content']}")
+    
+    # --- Suggested Questions ---
+    st.subheader("💡 Suggested Interview Questions")
+    for qa in selected["script"][:3]:
+        if st.button(qa["question"], key=f"suggest_{qa['question'][:10]}"):
+            st.session_state.user_input = qa["question"]
+            st.experimental_rerun()
+    
+    # --- Analysis Sidebar ---
+    with st.sidebar:
+        st.header("📊 AI Analysis Panel")
+        
+        # Red Flags
+        if selected["red_flags"]:
+            st.error(f"⛔ Red Flags Detected: {len(selected['red_flags'])}")
+            for flag in selected["red_flags"]:
+                st.markdown(f"- 🔍 {flag}")
+        else:
+            st.success("✅ No red flags detected")
+        
+        # Protocols
+        st.subheader("📝 Required Protocols")
+        for protocol in selected.get("protocols", []):
+            if st.checkbox(protocol):
+                st.session_state.protocols_followed += 1
+        
+        # Performance
+        st.subheader("📈 Performance Metrics")
+        st.metric("Protocols Followed", st.session_state.protocols_followed)
+        st.metric("Response Consistency", 
+                 f"{min(st.session_state.score * 10, 100)}%")
+        
+        # Download Report
+        report = f"""
+        # After-Action Report
+        ## {selected['name']}
+        **Decision**: {selected['decision']}  
+        **Score**: {st.session_state.score}/10  
+        **Time Spent**: {datetime.fromtimestamp(st.session_state.start_time).strftime('%H:%M:%S')}
+        ### Key Findings
+        {chr(10).join(selected["red_flags"])}
+        """
+        st.download_button("📥 Download Report", report, file_name="dhs_report.md")
 
-# Question input
-with st.form("question_form"):
-    user_input = st.text_input("Ask a question...", key="question_input")
-    submitted = st.form_submit_button("Submit")
-
-# Process question
-if submitted:
-    with st.spinner("Traveler is thinking..."):
-        time.sleep(1)  # Simulate processing time
+def process_question(selected, user_input):
+    with st.spinner("🔍 Analyzing response..."):
+        time.sleep(0.5)  # Simulate processing
         
         response_found = False
         for qa in selected["script"]:
-            if user_input.lower().strip() == qa["question"].lower().strip():
-                st.write(f"**{selected['name']}**: {qa['response']}")
-                st.write(f"*Emotion detected: {qa['emotion'].title()}*")
+            if user_input.strip().lower() == qa["question"].strip().lower():
+                # Update conversation history
+                st.session_state.conversation.append({
+                    "time": datetime.now().strftime("%H:%M:%S"),
+                    "role": "You",
+                    "content": user_input
+                })
+                st.session_state.conversation.append({
+                    "time": datetime.now().strftime("%H:%M:%S"),
+                    "role": selected["name"],
+                    "content": qa["response"]
+                })
+                
+                # Update score
+                if any(flag in qa["response"] for flag in selected["red_flags"]):
+                    st.session_state.score += 2
+                
+                # Display response
+                with st.chat_message("user"):
+                    st.write(f"**You**: {user_input}")
+                with st.chat_message("ai", avatar="🛃"):
+                    st.write(f"**{selected['name']}**: {qa['response']}")
+                    st.caption(f"*Emotion detected: {qa['emotion'].title()}*")
+                
                 response_found = True
                 break
         
         if not response_found:
-            st.write(f"**{selected['name']}**: I'm not sure how to answer that.")
+            st.warning(f"**{selected['name']}**: I don't understand that question.")
+            st.session_state.score -= 1
 
-# Sidebar analysis
-with st.sidebar:
-    st.header("AI Analysis")
-    
-    if selected["red_flags"]:
-        st.metric("Red Flags Detected", len(selected["red_flags"]))
-        for flag in selected["red_flags"]:
-            st.error(f"⚠️ {flag}")
-    else:
-        st.success("No red flags detected")
-    
-    st.subheader("Recommended Action")
-    st.markdown(f"**{selected['decision']}**")
-    st.caption(selected["decision_reason"])
-
-# Predefined questions
-st.subheader("Suggested Questions")
-for qa in selected["script"][:2]:  # Show first 2 questions
-    if st.button(qa["question"]):
-        st.session_state.user_input = qa["question"]
-        st.experimental_rerun()
+if __name__ == "__main__":
+    main()
