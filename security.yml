@@ -1,0 +1,9 @@
+name: Security Checks
+on: [push]
+
+jobs:
+  basic-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependency Scan
+        run: echo "Security scanning placeholder"
