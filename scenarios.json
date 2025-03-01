@@ -15,17 +15,31 @@
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here to visit New York City for two weeks.",
-          "emotion": "calm"
+          "response": "I'm here to visit New York City for two weeks.",
+          "emotion": "calm",
+          "training_tip": "Ask open-ended questions to gather more details."
         },
         {
           "question": "Can I see your return ticket?",
-          "response": "Yes, here it is. I’m returning on [date 6 months later].",
-          "emotion": "nervous"
+          "response": "Yes, here it is. I'm returning on [date 6 months later].",
+          "emotion": "nervous",
+          "training_tip": "Verify documents for inconsistencies and cross-check with databases."
         }
       ],
       "decision": "Detain for further questioning",
-      "decision_reason": "Inconsistent travel dates and suspicious travel history."
+      "decision_reason": "Inconsistent travel dates and suspicious travel history.",
+      "solutions": [
+        "Cross-check travel history using TECS/ATS",
+        "Verify return ticket details with the airline"
+      ],
+      "protocols": [
+        "Detain under 8 CFR 235.3 for further investigation",
+        "Notify supervisor for secondary screening"
+      ],
+      "next_steps": [
+        "Practice identifying inconsistencies in travel documents",
+        "Conduct mock interviews with suspicious travelers"
+      ]
     },
     {
       "id": 2,
@@ -35,24 +49,38 @@
       "purpose": "Business meeting",
       "emotional_state": "overly confident",
       "red_flags": [
-        "Forged documents: Work visa has incorrect formatting.",
-        "Fake company: Claims to represent a company that doesn’t exist.",
-        "Overly confident and dismissive during questioning."
+        "Forged documents: Work visa has incorrect formatting",
+        "Fake company: Claims to represent non-existent company",
+        "Overly confident and dismissive during questioning"
       ],
       "script": [
         {
           "question": "Who are you meeting with?",
           "response": "I have a meeting with [fake company name].",
-          "emotion": "overly confident"
+          "emotion": "overly confident",
+          "training_tip": "Ask for specific company details"
         },
         {
           "question": "Can I see your work visa?",
           "response": "Of course, here it is.",
-          "emotion": "defensive"
+          "emotion": "defensive",
+          "training_tip": "Inspect documents for formatting errors"
         }
       ],
       "decision": "Deny entry",
-      "decision_reason": "Forged documents and fraudulent business claims."
+      "decision_reason": "Forged documents and fraudulent business claims.",
+      "solutions": [
+        "Validate visa with issuing embassy",
+        "Conduct company background check"
+      ],
+      "protocols": [
+        "Deny entry under 8 USC 1182(a)(7)(i)",
+        "Provide appeal instructions"
+      ],
+      "next_steps": [
+        "Practice identifying forged documents",
+        "Simulate fake identity scenarios"
+      ]
     },
     {
       "id": 3,
@@ -62,24 +90,38 @@
       "purpose": "Seeking asylum",
       "emotional_state": "distressed",
       "red_flags": [
-        "Inconsistent timeline: Cannot recall exact dates of events.",
-        "Rehearsed responses: Answers sound scripted.",
-        "Emotionally distressed but unable to provide specific details."
+        "Inconsistent timeline of events",
+        "Rehearsed responses",
+        "Unable to provide specific details"
       ],
       "script": [
         {
           "question": "Why are you seeking asylum?",
-          "response": "I fled my country because of violence. My family was killed.",
-          "emotion": "sad"
+          "response": "I fled due to violence. My family was killed.",
+          "emotion": "sad",
+          "training_tip": "Use PEACE model for rapport building"
         },
         {
           "question": "Can you tell me more about the incident?",
-          "response": "It happened last year... no, two years ago. I can’t remember exactly.",
-          "emotion": "confused"
+          "response": "It happened last year... no, two years ago.",
+          "emotion": "confused",
+          "training_tip": "Check timeline consistency"
         }
       ],
       "decision": "Detain for further questioning",
-      "decision_reason": "Inconsistent timeline and rehearsed responses."
+      "decision_reason": "Inconsistent timeline and rehearsed responses.",
+      "solutions": [
+        "Request additional documentation",
+        "Consult asylum officer"
+      ],
+      "protocols": [
+        "Detain under 8 CFR 235.3",
+        "Provide legal counsel access"
+      ],
+      "next_steps": [
+        "Practice asylum interviews",
+        "Review asylum fraud cases"
+      ]
     },
     {
       "id": 4,
@@ -92,17 +134,30 @@
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here to visit Disneyland for a week.",
-          "emotion": "happy"
+          "response": "I'm here to visit Disneyland for a week.",
+          "emotion": "happy",
+          "training_tip": "Verify travel documents"
         },
         {
           "question": "Can I see your return ticket?",
-          "response": "Sure, here it is. I’m returning on [date].",
-          "emotion": "calm"
+          "response": "Sure, returning on [date].",
+          "emotion": "calm",
+          "training_tip": "Cross-check with TECS/ATS"
         }
       ],
       "decision": "Admit",
-      "decision_reason": "No red flags; all documents and responses are consistent."
+      "decision_reason": "Consistent documents and responses.",
+      "solutions": [
+        "Confirm return ticket",
+        "Welcome traveler"
+      ],
+      "protocols": [
+        "Admit under 8 USC 1182(a)(7)(i)"
+      ],
+      "next_steps": [
+        "Practice efficient screening",
+        "Conduct low-risk interviews"
+      ]
     },
     {
       "id": 5,
@@ -112,24 +167,38 @@
       "purpose": "Business",
       "emotional_state": "evasive",
       "red_flags": [
-        "Suspicious connections: Mentions a company under investigation.",
-        "Vague responses: Avoids direct answers about purpose of visit.",
-        "Evasive body language: Avoids eye contact and fidgets."
+        "Suspicious company connections",
+        "Vague responses about purpose",
+        "Evasive body language"
       ],
       "script": [
         {
           "question": "What is the nature of your business?",
-          "response": "I’m here for a conference... and some meetings.",
-          "emotion": "evasive"
+          "response": "I'm here for a conference... and meetings.",
+          "emotion": "evasive",
+          "training_tip": "Request specific meeting details"
         },
         {
-          "question": "Can you provide details about the conference?",
-          "response": "It’s about technology... I don’t have the exact details.",
-          "emotion": "nervous"
+          "question": "Can you provide conference details?",
+          "response": "It's about technology... no exact details.",
+          "emotion": "nervous",
+          "training_tip": "Verify with conference organizers"
         }
       ],
       "decision": "Detain for further questioning",
-      "decision_reason": "Suspicious connections and evasive responses."
+      "decision_reason": "Suspicious connections and evasive responses.",
+      "solutions": [
+        "Contact conference organizers",
+        "Check company databases"
+      ],
+      "protocols": [
+        "Detain under 8 CFR 235.3",
+        "Notify intelligence unit"
+      ],
+      "next_steps": [
+        "Practice evasive response handling",
+        "Review surveillance list protocols"
+      ]
     },
     {
       "id": 6,
@@ -139,24 +208,38 @@
       "purpose": "Family visit",
       "emotional_state": "anxious",
       "red_flags": [
-        "Overstayed visa: Previously overstayed a visa by 3 months.",
-        "Inconsistent story: Claims to visit family but cannot provide addresses.",
-        "Anxious behavior: Sweating and avoiding direct answers."
+        "Previous visa overstay (3 months)",
+        "Inconsistent family details",
+        "Anxious behavior"
       ],
       "script": [
         {
           "question": "Who are you visiting?",
           "response": "My cousin in Miami.",
-          "emotion": "anxious"
+          "emotion": "anxious",
+          "training_tip": "Verify family relationships"
         },
         {
           "question": "Can you provide their address?",
-          "response": "I don’t remember the exact address... I’ll call them later.",
-          "emotion": "defensive"
+          "response": "I'll call them later for address.",
+          "emotion": "defensive",
+          "training_tip": "Check previous immigration records"
         }
       ],
       "decision": "Deny entry",
-      "decision_reason": "History of overstaying visa and inconsistent story."
+      "decision_reason": "History of overstaying and inconsistent story.",
+      "solutions": [
+        "Verify previous visa records",
+        "Contact family member"
+      ],
+      "protocols": [
+        "Deny under 8 USC 1182(a)(9)(B)",
+        "Provide reapplication instructions"
+      ],
+      "next_steps": [
+        "Practice visa violation detection",
+        "Review overstay case studies"
+      ]
     },
     {
       "id": 7,
@@ -169,17 +252,30 @@
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here to visit the Grand Canyon.",
-          "emotion": "excited"
+          "response": "I'm here to see the Grand Canyon.",
+          "emotion": "excited",
+          "training_tip": "Verify travel itinerary"
         },
         {
           "question": "How long will you stay?",
-          "response": "Two weeks. I have my return ticket here.",
-          "emotion": "calm"
+          "response": "Two weeks with return ticket.",
+          "emotion": "calm",
+          "training_tip": "Confirm accommodation details"
         }
       ],
       "decision": "Admit",
-      "decision_reason": "No red flags; all documents and responses are consistent."
+      "decision_reason": "Consistent documents and responses.",
+      "solutions": [
+        "Confirm return ticket",
+        "Welcome traveler"
+      ],
+      "protocols": [
+        "Admit under 8 USC 1182(a)(7)(i)"
+      ],
+      "next_steps": [
+        "Practice low-risk screening",
+        "Conduct efficiency drills"
+      ]
     },
     {
       "id": 8,
@@ -189,24 +285,38 @@
       "purpose": "Medical treatment",
       "emotional_state": "stressed",
       "red_flags": [
-        "No medical documents: Cannot provide proof of medical appointment.",
-        "Inconsistent funding: Claims self-funded but has no bank statements.",
-        "Stressed demeanor: Appears overly anxious about questions."
+        "No medical documentation",
+        "Inconsistent funding claims",
+        "Overly anxious demeanor"
       ],
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here for medical treatment.",
-          "emotion": "stressed"
+          "response": "I'm here for medical treatment.",
+          "emotion": "stressed",
+          "training_tip": "Request medical records"
         },
         {
           "question": "Can you provide documentation?",
-          "response": "I don’t have it with me... my doctor will send it later.",
-          "emotion": "defensive"
+          "response": "My doctor will send it later.",
+          "emotion": "defensive",
+          "training_tip": "Verify financial capability"
         }
       ],
       "decision": "Deny entry",
-      "decision_reason": "Lack of documentation and inconsistent funding claims."
+      "decision_reason": "Lack of documentation and inconsistent funding.",
+      "solutions": [
+        "Request medical records",
+        "Check financial statements"
+      ],
+      "protocols": [
+        "Deny under 8 USC 1182(a)(7)(i)",
+        "Provide appeal instructions"
+      ],
+      "next_steps": [
+        "Practice medical claim evaluation",
+        "Review medical visa protocols"
+      ]
     },
     {
       "id": 9,
@@ -219,17 +329,30 @@
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here to study at [University Name].",
-          "emotion": "calm"
+          "response": "I'm here to study at [University].",
+          "emotion": "calm",
+          "training_tip": "Verify acceptance letter"
         },
         {
           "question": "Can I see your acceptance letter?",
           "response": "Yes, here it is.",
-          "emotion": "confident"
+          "emotion": "confident",
+          "training_tip": "Confirm enrollment status"
         }
       ],
       "decision": "Admit",
-      "decision_reason": "No red flags; all documents and responses are consistent."
+      "decision_reason": "Valid documents and consistent responses.",
+      "solutions": [
+        "Confirm university enrollment",
+        "Welcome student"
+      ],
+      "protocols": [
+        "Admit under 8 USC 1182(a)(7)(i)"
+      ],
+      "next_steps": [
+        "Practice student visa screening",
+        "Review academic visa protocols"
+      ]
     },
     {
       "id": 10,
@@ -239,24 +362,38 @@
       "purpose": "Work",
       "emotional_state": "nervous",
       "red_flags": [
-        "Fake work permit: Work permit appears forged.",
-        "Inconsistent employer: Cannot provide employer contact details.",
-        "Nervous behavior: Fidgeting and avoiding eye contact."
+        "Suspicious work permit",
+        "Inconsistent employer details",
+        "Nervous behavior"
       ],
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here for a construction job.",
-          "emotion": "nervous"
+          "response": "I'm here for a construction job.",
+          "emotion": "nervous",
+          "training_tip": "Verify employer information"
         },
         {
           "question": "Can I see your work permit?",
           "response": "Yes, here it is.",
-          "emotion": "defensive"
+          "emotion": "defensive",
+          "training_tip": "Inspect document security features"
         }
       ],
       "decision": "Deny entry",
-      "decision_reason": "Fake work permit and inconsistent employer details."
+      "decision_reason": "Suspicious work permit and employer details.",
+      "solutions": [
+        "Validate work permit authenticity",
+        "Contact employer directly"
+      ],
+      "protocols": [
+        "Deny under 8 USC 1182(a)(7)(i)",
+        "Provide reapplication instructions"
+      ],
+      "next_steps": [
+        "Practice work visa verification",
+        "Review forged document examples"
+      ]
     },
     {
       "id": 11,
@@ -269,17 +406,30 @@
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here to visit New York City.",
-          "emotion": "excited"
+          "response": "I'm here to visit New York City.",
+          "emotion": "excited",
+          "training_tip": "Verify travel itinerary"
         },
         {
           "question": "How long will you stay?",
-          "response": "Two weeks. Here’s my return ticket.",
-          "emotion": "calm"
+          "response": "Two weeks with return ticket.",
+          "emotion": "calm",
+          "training_tip": "Confirm accommodation bookings"
         }
       ],
       "decision": "Admit",
-      "decision_reason": "No red flags; all documents and responses are consistent."
+      "decision_reason": "Consistent documents and responses.",
+      "solutions": [
+        "Confirm return ticket",
+        "Welcome traveler"
+      ],
+      "protocols": [
+        "Admit under 8 USC 1182(a)(7)(i)"
+      ],
+      "next_steps": [
+        "Practice tourist screening",
+        "Conduct cultural awareness training"
+      ]
     },
     {
       "id": 12,
@@ -289,24 +439,38 @@
       "purpose": "Business",
       "emotional_state": "confident",
       "red_flags": [
-        "Suspicious contacts: Mentions a person under surveillance.",
-        "Vague business details: Cannot provide specifics about business meetings.",
-        "Overly confident: Dismissive of follow-up questions."
+        "Mentions surveilled contacts",
+        "Vague meeting details",
+        "Dismissive attitude"
       ],
       "script": [
         {
           "question": "What is the purpose of your visit?",
-          "response": "I’m here for business meetings.",
-          "emotion": "confident"
+          "response": "I'm here for business meetings.",
+          "emotion": "confident",
+          "training_tip": "Request meeting specifics"
         },
         {
-          "question": "Can you provide details about the meetings?",
-          "response": "It’s confidential... I can’t share details.",
-          "emotion": "evasive"
+          "question": "Can you provide meeting details?",
+          "response": "Confidential - can't share.",
+          "emotion": "evasive",
+          "training_tip": "Check watchlist databases"
         }
       ],
       "decision": "Detain for further questioning",
-      "decision_reason": "Suspicious contacts and vague business details."
+      "decision_reason": "Suspicious contacts and vague business details.",
+      "solutions": [
+        "Cross-check with intelligence databases",
+        "Notify counterterrorism unit"
+      ],
+      "protocols": [
+        "Detain under 8 CFR 235.3",
+        "Initiate enhanced screening"
+      ],
+      "next_steps": [
+        "Practice counterterrorism protocols",
+        "Review surveillance list procedures"
+      ]
     }
   ]
 }
