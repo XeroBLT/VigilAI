@@ -1,0 +1,313 @@
+json
+{
+  "travelers": [
+    {
+      "id": 1,
+      "name": "Maria Gonzalez",
+      "nationality": "Mexican",
+      "age": 28,
+      "purpose": "Tourism",
+      "emotional_state": "nervous",
+      "red_flags": [
+        "Inconsistent dates: Claims 2-week visit but has a 6-month return ticket.",
+        "Suspicious travel history: Frequent travel to high-risk countries.",
+        "Avoids eye contact during questioning."
+      ],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here to visit New York City for two weeks.",
+          "emotion": "calm"
+        },
+        {
+          "question": "Can I see your return ticket?",
+          "response": "Yes, here it is. I’m returning on [date 6 months later].",
+          "emotion": "nervous"
+        }
+      ],
+      "decision": "Detain for further questioning",
+      "decision_reason": "Inconsistent travel dates and suspicious travel history."
+    },
+    {
+      "id": 2,
+      "name": "Ahmed Al-Mansoori",
+      "nationality": "Emirati",
+      "age": 45,
+      "purpose": "Business meeting",
+      "emotional_state": "overly confident",
+      "red_flags": [
+        "Forged documents: Work visa has incorrect formatting.",
+        "Fake company: Claims to represent a company that doesn’t exist.",
+        "Overly confident and dismissive during questioning."
+      ],
+      "script": [
+        {
+          "question": "Who are you meeting with?",
+          "response": "I have a meeting with [fake company name].",
+          "emotion": "overly confident"
+        },
+        {
+          "question": "Can I see your work visa?",
+          "response": "Of course, here it is.",
+          "emotion": "defensive"
+        }
+      ],
+      "decision": "Deny entry",
+      "decision_reason": "Forged documents and fraudulent business claims."
+    },
+    {
+      "id": 3,
+      "name": "Fatima Abdi",
+      "nationality": "Somali",
+      "age": 34,
+      "purpose": "Seeking asylum",
+      "emotional_state": "distressed",
+      "red_flags": [
+        "Inconsistent timeline: Cannot recall exact dates of events.",
+        "Rehearsed responses: Answers sound scripted.",
+        "Emotionally distressed but unable to provide specific details."
+      ],
+      "script": [
+        {
+          "question": "Why are you seeking asylum?",
+          "response": "I fled my country because of violence. My family was killed.",
+          "emotion": "sad"
+        },
+        {
+          "question": "Can you tell me more about the incident?",
+          "response": "It happened last year... no, two years ago. I can’t remember exactly.",
+          "emotion": "confused"
+        }
+      ],
+      "decision": "Detain for further questioning",
+      "decision_reason": "Inconsistent timeline and rehearsed responses."
+    },
+    {
+      "id": 4,
+      "name": "Emily Johnson",
+      "nationality": "Canadian",
+      "age": 22,
+      "purpose": "Vacation",
+      "emotional_state": "calm",
+      "red_flags": [],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here to visit Disneyland for a week.",
+          "emotion": "happy"
+        },
+        {
+          "question": "Can I see your return ticket?",
+          "response": "Sure, here it is. I’m returning on [date].",
+          "emotion": "calm"
+        }
+      ],
+      "decision": "Admit",
+      "decision_reason": "No red flags; all documents and responses are consistent."
+    },
+    {
+      "id": 5,
+      "name": "Chen Wei",
+      "nationality": "Chinese",
+      "age": 40,
+      "purpose": "Business",
+      "emotional_state": "evasive",
+      "red_flags": [
+        "Suspicious connections: Mentions a company under investigation.",
+        "Vague responses: Avoids direct answers about purpose of visit.",
+        "Evasive body language: Avoids eye contact and fidgets."
+      ],
+      "script": [
+        {
+          "question": "What is the nature of your business?",
+          "response": "I’m here for a conference... and some meetings.",
+          "emotion": "evasive"
+        },
+        {
+          "question": "Can you provide details about the conference?",
+          "response": "It’s about technology... I don’t have the exact details.",
+          "emotion": "nervous"
+        }
+      ],
+      "decision": "Detain for further questioning",
+      "decision_reason": "Suspicious connections and evasive responses."
+    },
+    {
+      "id": 6,
+      "name": "Luis Martinez",
+      "nationality": "Colombian",
+      "age": 29,
+      "purpose": "Family visit",
+      "emotional_state": "anxious",
+      "red_flags": [
+        "Overstayed visa: Previously overstayed a visa by 3 months.",
+        "Inconsistent story: Claims to visit family but cannot provide addresses.",
+        "Anxious behavior: Sweating and avoiding direct answers."
+      ],
+      "script": [
+        {
+          "question": "Who are you visiting?",
+          "response": "My cousin in Miami.",
+          "emotion": "anxious"
+        },
+        {
+          "question": "Can you provide their address?",
+          "response": "I don’t remember the exact address... I’ll call them later.",
+          "emotion": "defensive"
+        }
+      ],
+      "decision": "Deny entry",
+      "decision_reason": "History of overstaying visa and inconsistent story."
+    },
+    {
+      "id": 7,
+      "name": "Anna Kowalski",
+      "nationality": "Polish",
+      "age": 50,
+      "purpose": "Tourism",
+      "emotional_state": "calm",
+      "red_flags": [],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here to visit the Grand Canyon.",
+          "emotion": "excited"
+        },
+        {
+          "question": "How long will you stay?",
+          "response": "Two weeks. I have my return ticket here.",
+          "emotion": "calm"
+        }
+      ],
+      "decision": "Admit",
+      "decision_reason": "No red flags; all documents and responses are consistent."
+    },
+    {
+      "id": 8,
+      "name": "Yusuf Khan",
+      "nationality": "Pakistani",
+      "age": 35,
+      "purpose": "Medical treatment",
+      "emotional_state": "stressed",
+      "red_flags": [
+        "No medical documents: Cannot provide proof of medical appointment.",
+        "Inconsistent funding: Claims self-funded but has no bank statements.",
+        "Stressed demeanor: Appears overly anxious about questions."
+      ],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here for medical treatment.",
+          "emotion": "stressed"
+        },
+        {
+          "question": "Can you provide documentation?",
+          "response": "I don’t have it with me... my doctor will send it later.",
+          "emotion": "defensive"
+        }
+      ],
+      "decision": "Deny entry",
+      "decision_reason": "Lack of documentation and inconsistent funding claims."
+    },
+    {
+      "id": 9,
+      "name": "Sophie Dubois",
+      "nationality": "French",
+      "age": 27,
+      "purpose": "Study",
+      "emotional_state": "calm",
+      "red_flags": [],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here to study at [University Name].",
+          "emotion": "calm"
+        },
+        {
+          "question": "Can I see your acceptance letter?",
+          "response": "Yes, here it is.",
+          "emotion": "confident"
+        }
+      ],
+      "decision": "Admit",
+      "decision_reason": "No red flags; all documents and responses are consistent."
+    },
+    {
+      "id": 10,
+      "name": "Diego Rivera",
+      "nationality": "Mexican",
+      "age": 33,
+      "purpose": "Work",
+      "emotional_state": "nervous",
+      "red_flags": [
+        "Fake work permit: Work permit appears forged.",
+        "Inconsistent employer: Cannot provide employer contact details.",
+        "Nervous behavior: Fidgeting and avoiding eye contact."
+      ],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here for a construction job.",
+          "emotion": "nervous"
+        },
+        {
+          "question": "Can I see your work permit?",
+          "response": "Yes, here it is.",
+          "emotion": "defensive"
+        }
+      ],
+      "decision": "Deny entry",
+      "decision_reason": "Fake work permit and inconsistent employer details."
+    },
+    {
+      "id": 11,
+      "name": "Aisha Mohammed",
+      "nationality": "Nigerian",
+      "age": 25,
+      "purpose": "Tourism",
+      "emotional_state": "calm",
+      "red_flags": [],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here to visit New York City.",
+          "emotion": "excited"
+        },
+        {
+          "question": "How long will you stay?",
+          "response": "Two weeks. Here’s my return ticket.",
+          "emotion": "calm"
+        }
+      ],
+      "decision": "Admit",
+      "decision_reason": "No red flags; all documents and responses are consistent."
+    },
+    {
+      "id": 12,
+      "name": "Raj Patel",
+      "nationality": "Indian",
+      "age": 42,
+      "purpose": "Business",
+      "emotional_state": "confident",
+      "red_flags": [
+        "Suspicious contacts: Mentions a person under surveillance.",
+        "Vague business details: Cannot provide specifics about business meetings.",
+        "Overly confident: Dismissive of follow-up questions."
+      ],
+      "script": [
+        {
+          "question": "What is the purpose of your visit?",
+          "response": "I’m here for business meetings.",
+          "emotion": "confident"
+        },
+        {
+          "question": "Can you provide details about the meetings?",
+          "response": "It’s confidential... I can’t share details.",
+          "emotion": "evasive"
+        }
+      ],
+      "decision": "Detain for further questioning",
+      "decision_reason": "Suspicious contacts and vague business details."
+    }
+  ]
+}
