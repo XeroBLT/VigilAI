@@ -18,7 +18,7 @@ def init_session():
         'protocols_followed': 0,
         'followed_protocols': {},
         'current_protocol_traveler': None,
-        'action_taken': None
+        'current_traveler': None
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
@@ -50,12 +50,11 @@ def main():
     selected = next(t for t in scenarios if t["name"] == selected_name)
     
     # Reset timer and protocols on new selection
-    if 'current_traveler' not in st.session_state or st.session_state.current_traveler != selected['id']:
+    if st.session_state.current_traveler != selected['id']:
         st.session_state.start_time = time.time()
         st.session_state.current_traveler = selected['id']
         st.session_state.followed_protocols = {}
         st.session_state.current_protocol_traveler = selected['id']
-        st.session_state.action_taken = None
 
     # --- Profile Header ---
     risk_text, risk_color = risk_indicator(selected["red_flags"])
@@ -137,22 +136,13 @@ def main():
         st.metric("Protocols Followed", st.session_state.protocols_followed)
         st.metric("Response Consistency", f"{min(st.session_state.score * 10, 100)}%")
         
-        # Action Panel
-        st.subheader("🚨 Action Panel")
-        action_options = ["Select Action", "Allow Entry", "Secondary Screening", "Detain for Further Questioning", "Deny Entry"]
-        action_taken = st.selectbox("Choose Action", options=action_options, key="action_taken")
+        # Decision Options
+        st.subheader("🛃 Decision Options")
+        decision_options = ["Allow Entry", "Secondary Screening", "Detain for Further Investigation", "Deny Entry"]
+        decision = st.radio("Select an action:", decision_options, key="decision_radio")
         
-        if st.button("Submit Action"):
-            if action_taken == "Select Action":
-                st.warning("Please select a valid action.")
-            else:
-                st.session_state.action_taken = action_taken
-                if action_taken == selected["correct_action"]:
-                    st.session_state.score += 5
-                    st.success(f"Correct action taken! Score increased by 5. Current score: {st.session_state.score}")
-                else:
-                    st.session_state.score = max(st.session_state.score - 3, 0)
-                    st.error(f"Incorrect action taken! Score decreased by 3. Current score: {st.session_state.score}")
+        if st.button("Submit Decision"):
+            handle_decision(selected, decision)
         
         # Download Report
         report = f"""
@@ -202,7 +192,16 @@ def process_question(selected, user_input):
         
         if not response_found:
             st.warning(f"**{selected['name']}**: I don't understand that question.")
-            st.session_state.score = max(st.session_state.score - 1, 0)
+            st.session_state.score -= 1
+
+def handle_decision(selected, decision):
+    correct_decision = selected["decision"]
+    if decision == correct_decision:
+        st.session_state.score += 5
+        st.success(f"✅ Correct decision! {decision} is the appropriate action for this traveler.")
+    else:
+        st.session_state.score = max(st.session_state.score - 3, 0)
+        st.error(f"❌ Incorrect decision. The correct action should have been {correct_decision}.")
 
 if __name__ == "__main__":
     main()
