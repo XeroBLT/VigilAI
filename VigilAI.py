@@ -18,7 +18,7 @@ def init_session():
         'protocols_followed': 0,
         'followed_protocols': {},
         'current_protocol_traveler': None,
-        'current_traveler': None
+        'executed': False  # Track if "Execute on the Spot" was used
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
@@ -50,11 +50,12 @@ def main():
     selected = next(t for t in scenarios if t["name"] == selected_name)
     
     # Reset timer and protocols on new selection
-    if st.session_state.current_traveler != selected['id']:
+    if 'current_traveler' not in st.session_state or st.session_state.current_traveler != selected['id']:
         st.session_state.start_time = time.time()
         st.session_state.current_traveler = selected['id']
         st.session_state.followed_protocols = {}
         st.session_state.current_protocol_traveler = selected['id']
+        st.session_state.executed = False  # Reset execution status
 
     # --- Profile Header ---
     risk_text, risk_color = risk_indicator(selected["red_flags"])
@@ -136,19 +137,40 @@ def main():
         st.metric("Protocols Followed", st.session_state.protocols_followed)
         st.metric("Response Consistency", f"{min(st.session_state.score * 10, 100)}%")
         
-        # Decision Options
-        st.subheader("🛃 Decision Options")
-        decision_options = ["Allow Entry", "Secondary Screening", "Detain for Further Investigation", "Deny Entry"]
-        decision = st.radio("Select an action:", decision_options, key="decision_radio")
+        # Action Options
+        st.subheader("🛠️ Action Options")
+        action = st.radio(
+            "Choose an action:",
+            options=["Allow Entry", "Detain for Further Questioning", "Deny Entry", "Execute on the Spot (Irreversible)"],
+            index=0
+        )
         
-        if st.button("Submit Decision"):
-            handle_decision(selected, decision)
+        if st.button("Confirm Action"):
+            if action == "Allow Entry" and len(selected["red_flags"]) == 0:
+                st.session_state.score += 5
+                st.success("✅ Correct decision: No red flags detected. Traveler allowed entry.")
+            elif action == "Detain for Further Questioning" and len(selected["red_flags"]) > 0:
+                st.session_state.score += 3
+                st.warning("⚠️ Correct decision: Red flags detected. Traveler detained for further questioning.")
+            elif action == "Deny Entry" and len(selected["red_flags"]) > 2:
+                st.session_state.score += 5
+                st.error("❌ Correct decision: High risk detected. Traveler denied entry.")
+            elif action == "Execute on the Spot (Irreversible)":
+                if st.session_state.score >= 10 and not st.session_state.executed:
+                    st.session_state.score = 0  # Reset score for the lulz
+                    st.session_state.executed = True
+                    st.error("💀 Traveler has been executed on the spot. Score reset to 0. Good job, agent.")
+                else:
+                    st.warning("🔒 You need a minimum score of 10 to unlock this action.")
+            else:
+                st.session_state.score -= 5
+                st.error("❌ Incorrect decision. Score penalized.")
         
         # Download Report
         report = f"""
         # After-Action Report
         ## {selected['name']}
-        **Decision**: {selected['decision']}  
+        **Decision**: {action}  
         **Score**: {st.session_state.score}/10  
         **Protocols Followed**: {st.session_state.protocols_followed}/{len(current_protocols)}
         **Time Spent**: {datetime.fromtimestamp(st.session_state.start_time).strftime('%H:%M:%S')}
@@ -193,15 +215,6 @@ def process_question(selected, user_input):
         if not response_found:
             st.warning(f"**{selected['name']}**: I don't understand that question.")
             st.session_state.score -= 1
-
-def handle_decision(selected, decision):
-    correct_decision = selected["decision"]
-    if decision == correct_decision:
-        st.session_state.score += 5
-        st.success(f"✅ Correct decision! {decision} is the appropriate action for this traveler.")
-    else:
-        st.session_state.score = max(st.session_state.score - 3, 0)
-        st.error(f"❌ Incorrect decision. The correct action should have been {correct_decision}.")
 
 if __name__ == "__main__":
     main()
