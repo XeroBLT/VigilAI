@@ -1,16 +1,23 @@
+# VigilAI: DHS-Compliant Security Training System
+
+## 📌 Contents
+- [Executive Summary](#-executive-summary)
+- [Key Features](#-key-features)
+- [System Architecture](#-system-architecture)
+- [Installation Guide](#-installation-guide)
+- [Compliance Overview](#-compliance-overview)
+
 ## 🚀 Executive Summary
-VigilAI is an AI-powered border security training system implementing DHS's "Zero Trust" architecture principles. Our solution reduces false positives by 40% while maintaining 98.7% threat detection accuracy...
+VigilAI is an AI-driven training simulator designed to meet DHS operational requirements for...
 
 ## 🔥 Key Features
-| Feature | DHS Directive | Technology Stack |
-|---------|---------------|-------------------|
-| Behavioral Analysis | CDM Program | PyTorch + OpenCV |
-| Threat Intelligence Feed | NCPS | MISP + STIX/TAXII |
-|...|...|...|
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Threat Detection | AI-powered pattern recognition | Beta |
+| Protocol System | Dynamic security procedures | v1.0 |
 
 ## 🏗 System Architecture
 ```mermaid
 graph TD
-    A[Edge Devices] --> B{AI Processing}
-    B --> C[Threat Database]
-    C --> D[Analyst Dashboard]
+    A[User Interface] --> B[AI Engine]
+    B --> C[Security Database]
