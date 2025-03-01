@@ -17,7 +17,7 @@ def init_session():
         'start_time': time.time(),
         'selected_protocols': [],
         'protocol_submitted': False,
-        'current_protocol_traveler': None,
+        'current_traveler': None,
         'protocol_feedback': {},
         'show_hints': False
     }
