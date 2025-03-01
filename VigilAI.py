@@ -15,7 +15,9 @@ def init_session():
         'conversation': [],
         'score': 0,
         'start_time': time.time(),
-        'protocols_followed': 0
+        'protocols_followed': 0,
+        'followed_protocols': {},
+        'current_protocol_traveler': None
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
@@ -46,11 +48,13 @@ def main():
     )
     selected = next(t for t in scenarios if t["name"] == selected_name)
     
-    # Reset timer on new selection
+    # Reset timer and protocols on new selection
     if 'current_traveler' not in st.session_state or st.session_state.current_traveler != selected['id']:
         st.session_state.start_time = time.time()
         st.session_state.current_traveler = selected['id']
-    
+        st.session_state.followed_protocols = {}
+        st.session_state.current_protocol_traveler = selected['id']
+
     # --- Profile Header ---
     risk_text, risk_color = risk_indicator(selected["red_flags"])
     with st.container():
@@ -107,17 +111,29 @@ def main():
         else:
             st.success("✅ No red flags detected")
         
-        # Protocols
+        # Protocol Tracking
         st.subheader("📝 Required Protocols")
-        for protocol in selected.get("protocols", []):
-            if st.checkbox(protocol):
-                st.session_state.protocols_followed += 1
+        current_protocols = selected.get("protocols", [])
+        new_followed = {}
+        protocol_change = 0
+
+        for protocol in current_protocols:
+            protocol_key = f"{selected['id']}-{protocol}"
+            was_checked = st.session_state.followed_protocols.get(protocol_key, False)
+            is_checked = st.checkbox(protocol, value=was_checked, key=f"proto_{protocol_key}")
+            new_followed[protocol_key] = is_checked
+            
+            if is_checked != was_checked:
+                protocol_change += 1 if is_checked else -1
+
+        # Update protocol count
+        st.session_state.protocols_followed += protocol_change
+        st.session_state.followed_protocols = new_followed
         
-        # Performance
+        # Performance Metrics
         st.subheader("📈 Performance Metrics")
         st.metric("Protocols Followed", st.session_state.protocols_followed)
-        st.metric("Response Consistency", 
-                 f"{min(st.session_state.score * 10, 100)}%")
+        st.metric("Response Consistency", f"{min(st.session_state.score * 10, 100)}%")
         
         # Download Report
         report = f"""
@@ -125,9 +141,10 @@ def main():
         ## {selected['name']}
         **Decision**: {selected['decision']}  
         **Score**: {st.session_state.score}/10  
+        **Protocols Followed**: {st.session_state.protocols_followed}/{len(current_protocols)}
         **Time Spent**: {datetime.fromtimestamp(st.session_state.start_time).strftime('%H:%M:%S')}
         ### Key Findings
-        {chr(10).join(selected["red_flags"])}
+        {chr(10).join(selected["red_flags"]) if selected["red_flags"] else "No red flags detected"}
         """
         st.download_button("📥 Download Report", report, file_name="dhs_report.md")
 
