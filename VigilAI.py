@@ -15,9 +15,10 @@ def init_session():
         'conversation': [],
         'score': 0,
         'start_time': time.time(),
-        'protocols_followed': 0,
-        'followed_protocols': {},
-        'current_protocol_traveler': None
+        'selected_protocols': [],
+        'protocol_submitted': False,
+        'current_protocol_traveler': None,
+        'protocol_feedback': {}
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
@@ -33,6 +34,13 @@ def risk_indicator(flags):
     else:
         return "🔴 HIGH RISK", "#F44336"
 
+# Get all possible protocols from all scenarios
+def get_all_protocols():
+    all_protocols = set()
+    for traveler in scenarios:
+        all_protocols.update(traveler.get("protocols", []))
+    return sorted(all_protocols)
+
 # Main application
 def main():
     st.set_page_config(page_title="DHS Training Simulator", layout="wide")
@@ -47,13 +55,17 @@ def main():
         index=0
     )
     selected = next(t for t in scenarios if t["name"] == selected_name)
+    all_protocols = get_all_protocols()
+    correct_protocols = selected.get("protocols", [])
     
-    # Reset timer and protocols on new selection
+    # Reset states on new selection
     if 'current_traveler' not in st.session_state or st.session_state.current_traveler != selected['id']:
         st.session_state.start_time = time.time()
         st.session_state.current_traveler = selected['id']
-        st.session_state.followed_protocols = {}
-        st.session_state.current_protocol_traveler = selected['id']
+        st.session_state.score = 0
+        st.session_state.selected_protocols = []
+        st.session_state.protocol_submitted = False
+        st.session_state.protocol_feedback = {}
 
     # --- Profile Header ---
     risk_text, risk_color = risk_indicator(selected["red_flags"])
@@ -89,7 +101,7 @@ def main():
     
     # --- Conversation History ---
     st.subheader("📜 Conversation Transcript")
-    for entry in st.session_state.conversation[-5:]:  # Show last 5 exchanges
+    for entry in st.session_state.conversation[-5:]:
         st.markdown(f"`{entry['time']}` **{entry['role']}**: {entry['content']}")
     
     # --- Suggested Questions ---
@@ -111,28 +123,64 @@ def main():
         else:
             st.success("✅ No red flags detected")
         
-        # Protocol Tracking
-        st.subheader("📝 Required Protocols")
-        current_protocols = selected.get("protocols", [])
-        new_followed = {}
-        protocol_change = 0
-
-        for protocol in current_protocols:
-            protocol_key = f"{selected['id']}-{protocol}"
-            was_checked = st.session_state.followed_protocols.get(protocol_key, False)
-            is_checked = st.checkbox(protocol, value=was_checked, key=f"proto_{protocol_key}")
-            new_followed[protocol_key] = is_checked
+        # Protocol Selection System
+        st.subheader("🔒 Protocol Selection")
+        st.write("Select ALL applicable protocols:")
+        
+        # Protocol checkboxes
+        selected_protocols = []
+        for protocol in all_protocols:
+            if st.checkbox(
+                protocol,
+                value=protocol in st.session_state.selected_protocols,
+                key=f"protocol_{selected['id']}_{protocol[:20]}"
+            ):
+                selected_protocols.append(protocol)
+        
+        # Protocol submission
+        protocol_submitted = st.button("✅ Validate Protocol Selection")
+        if protocol_submitted:
+            st.session_state.selected_protocols = selected_protocols
+            st.session_state.protocol_submitted = True
             
-            if is_checked != was_checked:
-                protocol_change += 1 if is_checked else -1
-
-        # Update protocol count
-        st.session_state.protocols_followed += protocol_change
-        st.session_state.followed_protocols = new_followed
+            # Calculate protocol score
+            correct = set(selected_protocols) & set(correct_protocols)
+            incorrect = set(selected_protocols) - set(correct_protocols)
+            missed = set(correct_protocols) - set(selected_protocols)
+            
+            st.session_state.score += len(correct) * 2
+            st.session_state.score -= (len(incorrect) + len(missed)) * 1
+            st.session_state.score = max(st.session_state.score, 0)
+            
+            st.session_state.protocol_feedback = {
+                "correct": list(correct),
+                "incorrect": list(incorrect),
+                "missed": list(missed)
+            }
+        
+        # Protocol feedback
+        if st.session_state.protocol_submitted:
+            st.subheader("📝 Protocol Feedback")
+            feedback = st.session_state.protocol_feedback
+            
+            if feedback["correct"]:
+                st.success("**Correctly Selected:**")
+                for p in feedback["correct"]:
+                    st.markdown(f"✓ {p}")
+            
+            if feedback["incorrect"]:
+                st.error("**Incorrectly Selected:**")
+                for p in feedback["incorrect"]:
+                    st.markdown(f"✗ {p}")
+            
+            if feedback["missed"]:
+                st.warning("**Missed Protocols:**")
+                for p in feedback["missed"]:
+                    st.markdown(f"⚠️ {p}")
         
         # Performance Metrics
         st.subheader("📈 Performance Metrics")
-        st.metric("Protocols Followed", st.session_state.protocols_followed)
+        st.metric("Current Score", st.session_state.score)
         st.metric("Response Consistency", f"{min(st.session_state.score * 10, 100)}%")
         
         # Download Report
@@ -141,8 +189,11 @@ def main():
         ## {selected['name']}
         **Decision**: {selected['decision']}  
         **Score**: {st.session_state.score}/10  
-        **Protocols Followed**: {st.session_state.protocols_followed}/{len(current_protocols)}
         **Time Spent**: {datetime.fromtimestamp(st.session_state.start_time).strftime('%H:%M:%S')}
+        ### Protocol Analysis
+        Correct: {len(st.session_state.protocol_feedback.get('correct', []))}
+        Incorrect: {len(st.session_state.protocol_feedback.get('incorrect', []))}
+        Missed: {len(st.session_state.protocol_feedback.get('missed', []))}
         ### Key Findings
         {chr(10).join(selected["red_flags"]) if selected["red_flags"] else "No red flags detected"}
         """
@@ -150,7 +201,7 @@ def main():
 
 def process_question(selected, user_input):
     with st.spinner("🔍 Analyzing response..."):
-        time.sleep(0.5)  # Simulate processing
+        time.sleep(0.5)
         
         response_found = False
         for qa in selected["script"]:
@@ -167,9 +218,9 @@ def process_question(selected, user_input):
                     "content": qa["response"]
                 })
                 
-                # Update score
-                if any(flag in qa["response"] for flag in selected["red_flags"]):
-                    st.session_state.score += 2
+                # Update score with bounds check (0-10)
+                new_score = st.session_state.score + 2
+                st.session_state.score = min(max(new_score, 0), 10)
                 
                 # Display response
                 with st.chat_message("user"):
@@ -182,8 +233,8 @@ def process_question(selected, user_input):
                 break
         
         if not response_found:
+            st.session_state.score = max(st.session_state.score - 1, 0)
             st.warning(f"**{selected['name']}**: I don't understand that question.")
-            st.session_state.score -= 1
 
 if __name__ == "__main__":
     main()
