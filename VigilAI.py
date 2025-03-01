@@ -127,13 +127,17 @@ def main():
         st.subheader("🔒 Protocol Selection")
         st.write("Select ALL applicable protocols:")
         
-        # Protocol checkboxes
+        # Protocol checkboxes with hashed keys
         selected_protocols = []
         for protocol in all_protocols:
+            # Generate unique key using hash of protocol text
+            protocol_hash = abs(hash(protocol))  # Absolute value for consistent hashing
+            unique_key = f"proto_{selected['id']}_{protocol_hash}"
+            
             if st.checkbox(
                 protocol,
                 value=protocol in st.session_state.selected_protocols,
-                key=f"protocol_{selected['id']}_{protocol[:20]}"
+                key=unique_key
             ):
                 selected_protocols.append(protocol)
         
