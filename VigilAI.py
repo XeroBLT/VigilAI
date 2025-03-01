@@ -3,13 +3,13 @@ import streamlit as st
 import json
 from datetime import datetime
 
-# Load scenarios
+# Load scenarios from JSON file
 with open("scenarios.json") as f:
     data = json.load(f)
     scenarios = data["travelers"]
 
-# Initialize session state
-def init_session():
+# Initialize session state for the application
+def initialize_session_state():
     session_defaults = {
         'user_input': '',
         'conversation': [],
@@ -17,118 +17,108 @@ def init_session():
         'start_time': time.time(),
         'protocols_followed': 0,
         'followed_protocols': {},
-        'current_protocol_traveler': None,
-        'level': 1,
-        'lives': 3,
-        'streak': 0,
-        'multiplier': 1,
-        'achievements': []
+        'current_traveler_id': None
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
 
-# Risk indicator component
-def risk_indicator(flags):
-    risk_level = len(flags)
+# Risk assessment component
+def assess_risk_level(red_flags):
+    risk_level = len(red_flags)
     if risk_level == 0:
-        return "🟢 LOW RISK", "#4CAF50"
+        return "🟢 LOW RISK", "#4CAF50"  # Green for low risk
     elif 1 <= risk_level <= 2:
-        return "🟡 MEDIUM RISK", "#FFC107"
+        return "🟡 MEDIUM RISK", "#FFC107"  # Yellow for medium risk
     else:
-        return "🔴 HIGH RISK", "#F44336"
+        return "🔴 HIGH RISK", "#F44336"  # Red for high risk
 
-# Main application
+# Main application function
 def main():
-    st.set_page_config(page_title="Border Patrol: The Game", layout="wide")
-    init_session()
+    st.set_page_config(page_title="DHS Border Security Training", layout="wide")
+    initialize_session_state()
     
-    st.title("🛂 Border Patrol: The Game")
+    st.title("DHS Border Security Training Simulator")
     
-    # --- Traveler Selection ---
+    # --- Traveler Profile Selection ---
     selected_name = st.selectbox(
         "Select Traveler Profile",
-        options=[t["name"] for t in scenarios],
+        options=[traveler["name"] for traveler in scenarios],
         index=0
     )
-    selected = next(t for t in scenarios if t["name"] == selected_name)
+    selected_traveler = next(traveler for traveler in scenarios if traveler["name"] == selected_name)
     
-    # Reset timer and protocols on new selection
-    if 'current_traveler' not in st.session_state or st.session_state.current_traveler != selected['id']:
+    # Reset session state if a new traveler is selected
+    if 'current_traveler_id' not in st.session_state or st.session_state.current_traveler_id != selected_traveler['id']:
         st.session_state.start_time = time.time()
-        st.session_state.current_traveler = selected['id']
+        st.session_state.current_traveler_id = selected_traveler['id']
         st.session_state.followed_protocols = {}
-        st.session_state.current_protocol_traveler = selected['id']
-        st.session_state.streak = 0
-        st.session_state.multiplier = 1
+        st.session_state.protocols_followed = 0
 
-    # --- Profile Header ---
-    risk_text, risk_color = risk_indicator(selected["red_flags"])
+    # --- Traveler Profile Header ---
+    risk_text, risk_color = assess_risk_level(selected_traveler["red_flags"])
     with st.container():
-        col1, col2, col3, col4 = st.columns([2,1,1,1])
+        col1, col2, col3 = st.columns([2, 1, 1])
         with col1:
-            st.subheader(f"Traveler Profile: {selected['name']}")
+            st.subheader(f"Traveler Profile: {selected_traveler['name']}")
         with col2:
             st.markdown(f"<h3 style='color:{risk_color};'>{risk_text}</h3>", unsafe_allow_html=True)
         with col3:
-            elapsed = int(time.time() - st.session_state.start_time)
-            st.metric("⏱️ Time Elapsed", f"{elapsed // 60:02d}:{elapsed % 60:02d}")
-        with col4:
-            st.metric("❤️ Lives", st.session_state.lives)
+            elapsed_time = int(time.time() - st.session_state.start_time)
+            st.metric("⏱️ Time Elapsed", f"{elapsed_time // 60:02d}:{elapsed_time % 60:02d}")
     
-    # --- Profile Details ---
+    # --- Traveler Details ---
     with st.expander("📄 Traveler Details", expanded=True):
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.markdown(f"**Nationality**: {selected['nationality']}")
-            st.markdown(f"**Age**: {selected['age']}")
+            st.markdown(f"**Nationality**: {selected_traveler['nationality']}")
+            st.markdown(f"**Age**: {selected_traveler['age']}")
         with col2:
-            st.markdown(f"**Purpose**: {selected['purpose']}")
-            st.markdown(f"**Emotional State**: {selected['emotional_state'].title()}")
+            st.markdown(f"**Purpose of Visit**: {selected_traveler['purpose']}")
+            st.markdown(f"**Emotional State**: {selected_traveler['emotional_state'].title()}")
         with col3:
             st.metric("🏆 Training Score", st.session_state.score)
-            st.metric("🔥 Streak", f"{st.session_state.streak}x{st.session_state.multiplier}")
     
-    # --- Conversation Interface ---
-    with st.form("question_form"):
-        user_input = st.text_input("Ask a question:", key="question_input")
-        submitted = st.form_submit_button("➤ Submit Question")
+    # --- Interview Interface ---
+    with st.form("interview_form"):
+        user_input = st.text_input("Enter your question:", key="question_input")
+        submitted = st.form_submit_button("Submit Question")
     
     if submitted:
-        process_question(selected, user_input)
+        process_interaction(selected_traveler, user_input)
     
     # --- Conversation History ---
     st.subheader("📜 Conversation Transcript")
-    for entry in st.session_state.conversation[-5:]:  # Show last 5 exchanges
+    for entry in st.session_state.conversation[-5:]:  # Display the last 5 exchanges
         st.markdown(f"`{entry['time']}` **{entry['role']}**: {entry['content']}")
     
     # --- Suggested Questions ---
     st.subheader("💡 Suggested Interview Questions")
-    for qa in selected["script"][:3]:
+    for qa in selected_traveler["script"][:3]:
         if st.button(qa["question"], key=f"suggest_{qa['question'][:10]}"):
             st.session_state.user_input = qa["question"]
             st.experimental_rerun()
     
     # --- Analysis Sidebar ---
     with st.sidebar:
-        st.header("📊 AI Analysis Panel")
+        st.header("📊 Analysis Panel")
         
         # Red Flags
-        if selected["red_flags"]:
-            st.error(f"⛔ Red Flags Detected: {len(selected['red_flags'])}")
-            for flag in selected["red_flags"]:
+        if selected_traveler["red_flags"]:
+            st.error(f"⛔ Red Flags Detected: {len(selected_traveler['red_flags'])}")
+            for flag in selected_traveler["red_flags"]:
                 st.markdown(f"- 🔍 {flag}")
         else:
             st.success("✅ No red flags detected")
         
         # Protocol Tracking
         st.subheader("📝 Required Protocols")
-        current_protocols = selected.get("protocols", [])
+        current_protocols = selected_traveler.get("protocols", [])
         new_followed = {}
         protocol_change = 0
 
         for protocol in current_protocols:
-            protocol_key = f"{selected['id']}-{protocol}"
+            protocol_key = f"{selected_traveler['id']}-{protocol}"
             was_checked = st.session_state.followed_protocols.get(protocol_key, False)
             is_checked = st.checkbox(protocol, value=was_checked, key=f"proto_{protocol_key}")
             new_followed[protocol_key] = is_checked
@@ -148,66 +138,53 @@ def main():
         # Download Report
         report = f"""
         # After-Action Report
-        ## {selected['name']}
-        **Decision**: {selected['decision']}  
+        ## {selected_traveler['name']}
+        **Decision**: {selected_traveler['decision']}  
         **Score**: {st.session_state.score}/10  
         **Protocols Followed**: {st.session_state.protocols_followed}/{len(current_protocols)}
         **Time Spent**: {datetime.fromtimestamp(st.session_state.start_time).strftime('%H:%M:%S')}
         ### Key Findings
-        {chr(10).join(selected["red_flags"]) if selected["red_flags"] else "No red flags detected"}
+        {chr(10).join(selected_traveler["red_flags"]) if selected_traveler["red_flags"] else "No red flags detected"}
         """
         st.download_button("📥 Download Report", report, file_name="dhs_report.md")
 
-def process_question(selected, user_input):
+# Process user questions and traveler responses
+def process_interaction(traveler, user_input):
     with st.spinner("🔍 Analyzing response..."):
-        time.sleep(0.5)  # Simulate processing
+        time.sleep(0.5)  # Simulate processing time
         
         response_found = False
-        for qa in selected["script"]:
+        for qa in traveler["script"]:
             if user_input.strip().lower() == qa["question"].strip().lower():
                 # Update conversation history
                 st.session_state.conversation.append({
                     "time": datetime.now().strftime("%H:%M:%S"),
-                    "role": "You",
+                    "role": "Officer",
                     "content": user_input
                 })
                 st.session_state.conversation.append({
                     "time": datetime.now().strftime("%H:%M:%S"),
-                    "role": selected["name"],
+                    "role": traveler["name"],
                     "content": qa["response"]
                 })
                 
-                # Update score
-                if any(flag in qa["response"] for flag in selected["red_flags"]):
-                    st.session_state.score += 2 * st.session_state.multiplier
-                    st.session_state.streak += 1
-                    if st.session_state.streak % 3 == 0:
-                        st.session_state.multiplier += 1
-                        st.balloons()
-                else:
-                    st.session_state.streak = 0
-                    st.session_state.multiplier = 1
+                # Update score based on red flags
+                if any(flag in qa["response"] for flag in traveler["red_flags"]):
+                    st.session_state.score += 2
                 
                 # Display response
                 with st.chat_message("user"):
-                    st.write(f"**You**: {user_input}")
+                    st.write(f"**Officer**: {user_input}")
                 with st.chat_message("ai", avatar="🛃"):
-                    st.write(f"**{selected['name']}**: {qa['response']}")
+                    st.write(f"**{traveler['name']}**: {qa['response']}")
                     st.caption(f"*Emotion detected: {qa['emotion'].title()}*")
                 
                 response_found = True
                 break
         
         if not response_found:
-            st.warning(f"**{selected['name']}**: I don't understand that question.")
+            st.warning(f"**{traveler['name']}**: I don't understand that question.")
             st.session_state.score -= 1
-            st.session_state.lives -= 1
-            if st.session_state.lives <= 0:
-                st.error("💀 Game Over! You've run out of lives.")
-                st.session_state.lives = 3
-                st.session_state.score = 0
-                st.session_state.streak = 0
-                st.session_state.multiplier = 1
 
 if __name__ == "__main__":
     main()
