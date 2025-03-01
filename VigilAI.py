@@ -183,7 +183,7 @@ def process_question(selected, user_input):
         
         if not response_found:
             st.warning(f"**{selected['name']}**: I don't understand that question.")
-            st.session_state.score -= 1
+            # Do not decrease the score here
 
 if __name__ == "__main__":
     main()
