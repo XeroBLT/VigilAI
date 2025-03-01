@@ -18,7 +18,8 @@ def init_session():
         'selected_protocols': [],
         'protocol_submitted': False,
         'current_protocol_traveler': None,
-        'protocol_feedback': {}
+        'protocol_feedback': {},
+        'show_hints': False
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
@@ -66,6 +67,7 @@ def main():
         st.session_state.selected_protocols = []
         st.session_state.protocol_submitted = False
         st.session_state.protocol_feedback = {}
+        st.session_state.show_hints = False
 
     # --- Profile Header ---
     risk_text, risk_color = risk_indicator(selected["red_flags"])
@@ -130,8 +132,7 @@ def main():
         # Protocol checkboxes with hashed keys
         selected_protocols = []
         for protocol in all_protocols:
-            # Generate unique key using hash of protocol text
-            protocol_hash = abs(hash(protocol))  # Absolute value for consistent hashing
+            protocol_hash = abs(hash(protocol))
             unique_key = f"proto_{selected['id']}_{protocol_hash}"
             
             if st.checkbox(
@@ -181,6 +182,34 @@ def main():
                 st.warning("**Missed Protocols:**")
                 for p in feedback["missed"]:
                     st.markdown(f"⚠️ {p}")
+
+        # Hint System
+        with st.expander("💡 Get Protocol Hints (Affects Score)", expanded=False):
+            if st.button("Show Hint (-1 Point)"):
+                if st.session_state.score > 0:
+                    st.session_state.score = max(st.session_state.score - 1, 0)
+                    st.session_state.show_hints = True
+                else:
+                    st.warning("You need at least 1 point to view hints!")
+
+            if st.session_state.show_hints:
+                st.write("**Protocol Indicators:**")
+                hint_mapping = {
+                    "USC": "U.S. Code",
+                    "CFR": "Code of Federal Regulations",
+                    "detain": "Temporary holding",
+                    "deny": "Entry refusal",
+                    "verify": "Document validation"
+                }
+
+                for protocol in correct_protocols:
+                    masked = protocol
+                    # Replace known terms
+                    for term, replacement in hint_mapping.items():
+                        masked = masked.replace(term, f"[{replacement}]")
+                    # Mask numbers
+                    masked = " ".join(["[Law]" if any(c.isdigit() for c in word) else word for word in masked.split()])
+                    st.markdown(f"• {masked}")
         
         # Performance Metrics
         st.subheader("📈 Performance Metrics")
